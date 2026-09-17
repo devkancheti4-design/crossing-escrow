@@ -47,10 +47,17 @@ function bits(obs: number): string {
 }
 
 async function report(id: bigint, note = ""): Promise<number> {
-  const [obs, act] = (await escrow.read.preview([id], { blockTag: "pending" })) as [number, number];
-  const e = (await escrow.read.getEscrow([id])) as { state: number };
+  const e = (await escrow.read.getEscrow([id])) as { state: number; lastObs: number; lastAct: number };
+  const terminal = e.state === 3 || e.state === 4;
+  // A finished escrow no longer holds its funds, so a LIVE measurement of it would report
+  // UNFUNDED and the law would rule on a crossing that no longer exists. Show what was
+  // actually ruled instead — the same thing the dApp shows for a terminal escrow.
+  const [obs, act] = terminal
+    ? [e.lastObs, e.lastAct]
+    : ((await escrow.read.preview([id], { blockTag: "pending" })) as [number, number]);
   const colour = act === 4 ? "\x1b[32m" : act === 2 ? "\x1b[34m" : act === 1 ? "\x1b[33m" : "\x1b[31m";
-  say(`   obs 0x${obs.toString(16).padStart(2, "0").toUpperCase()}  ${colour}act ${act} ${ACTS[act]}\x1b[0m  · state ${STATES[e.state]}  · ${bits(obs)}${note ? `  · ${note}` : ""}`);
+  const tag = terminal ? "last ruling" : "live";
+  say(`   ${tag} obs 0x${obs.toString(16).padStart(2, "0").toUpperCase()}  ${colour}act ${act} ${ACTS[act]}\x1b[0m  · state ${STATES[e.state]}  · ${bits(obs)}${note ? `  · ${note}` : ""}`);
   return act;
 }
 
@@ -103,7 +110,7 @@ async function settle() {
 
   say("\n   Approver B signs. Every measurement now reads clear.");
   await send("approver B signs", escrow.write.approve([id], { account: a2.account }));
-  await report(id, "the value crossed");
+  await report(id, "the law settled it: 25,000 mUSD crossed to the payee");
   await balances();
   say("\n   \x1b[1mNobody authorised that release. SETTLE is what was left over.\x1b[0m");
   await pause(2);
@@ -138,7 +145,7 @@ async function dispute() {
 
   say("\n   The arbiter finds for the payee.");
   await send("arbiter releases", escrow.write.resolve([id, 1], { account: arbiter.account }));
-  await report(id);
+  await report(id, "released by the ARBITER during the hold window, not by a new ruling");
   await balances();
   await pause(2);
   return id;
@@ -178,7 +185,7 @@ async function timeout() {
 
   say("\n   The payer takes their money back.");
   await send("payer refunds", escrow.write.refund([id], { account: payer.account }));
-  await report(id);
+  await report(id, "refunded by the PAYER after the deadline; the last ruling stands");
   await balances();
   await pause(2);
   return id;
@@ -196,7 +203,7 @@ async function pauseRail() {
   const id2 = await open({ amount: "5000", quorum: 1, memo: "INV-DEMO-006" }).catch(() => null);
   if (id2 === null) say("\x1b[2m   (opening new escrows is blocked while paused — as designed)\x1b[0m");
   await send("payee cancels, funds return to the payer", escrow.write.refund([id], { account: payee.account }));
-  await report(id);
+  await report(id, "cancelled by the PAYEE — possible even while the rail is paused");
   await send("guardian unpauses", escrow.write.unpause({ account: guardian.account }));
   await pause(2);
   return id;
@@ -205,6 +212,11 @@ async function pauseRail() {
 /* ---------------------------------------------------------------------- main */
 console.log(`\n\x1b[1mCROSSING — scripted demo\x1b[0m   escrow ${escrow.address}`);
 console.log(`\x1b[2mwatch it at http://localhost:5173 while this runs\x1b[0m`);
+{
+  const existing = (await escrow.read.escrowCount()) as bigint;
+  if (existing > 2n)
+    console.log(`\x1b[2m${existing} escrows already on this chain — run \`npm run deploy:local\` on a fresh node for clean balances\x1b[0m`);
+}
 const run: Record<string, () => Promise<bigint>> = { settle, dispute, depeg, timeout, pause: pauseRail };
 if (SCENARIO === "all") { for (const k of ["settle", "dispute", "depeg", "timeout", "pause"]) await run[k](); }
 else if (run[SCENARIO]) await run[SCENARIO]();
