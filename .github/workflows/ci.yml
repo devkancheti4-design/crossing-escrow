@@ -1,0 +1,63 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  HARDHAT_DISABLE_TELEMETRY_PROMPT: "true"
+
+jobs:
+  test:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # ---- contracts: the law's obligations in Solidity + every escrow transition
+      - name: contracts - install
+        working-directory: contracts
+        run: npm ci
+      - name: contracts - test
+        working-directory: contracts
+        run: npx hardhat test
+
+      # ---- frontend: the TypeScript port's obligations + typed build
+      - name: frontend - install
+        working-directory: frontend
+        run: npm ci
+      - name: frontend - test
+        working-directory: frontend
+        run: npm test
+      - name: frontend - build
+        working-directory: frontend
+        run: npm run build
+
+      # ---- the law itself: compile with -Werror and run the self-proving harness
+      - name: law - compile and certify (unix)
+        if: runner.os != 'Windows'
+        working-directory: law
+        run: |
+          cc -O2 -Wall -Wextra -Werror -o crossing crossing.c
+          ./crossing
+      - name: law - set up MinGW-w64 gcc (windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: mingw-w64-ucrt-x86_64-gcc
+      - name: law - compile and certify (windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        working-directory: law
+        run: |
+          gcc -O2 -Wall -Wextra -Werror -o crossing.exe crossing.c
+          ./crossing.exe

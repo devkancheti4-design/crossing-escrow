@@ -13,7 +13,8 @@ footer { padding: 14px 24px; border-top: 1px solid var(--line); }
 .warn { color: var(--attest); }
 h2 { margin: 0; font-size: 22px; } h3 { margin: 0; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 .page-h { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
-.banner.red { background: #3a1218; color: #ffb3ba; padding: 8px 24px; }
+.banner.red { background: #3a1218; color: #ffb3ba; padding: 8px 24px; line-height: 1.5; }
+.banner code { font-family: var(--mono); background: #2a1116; padding: 1px 6px; border-radius: 4px; }
 /* header */
 .hdr { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; padding: 10px 24px; border-bottom: 1px solid var(--line); background: var(--bg2); position: sticky; top: 0; z-index: 5; }
 .brand { display: flex; align-items: center; gap: 10px; cursor: pointer; }

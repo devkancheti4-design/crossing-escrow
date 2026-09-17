@@ -3,6 +3,7 @@ import { EscrowDetail } from "./components/EscrowDetail";
 import { EscrowList } from "./components/EscrowList";
 import { Header, type Page } from "./components/Header";
 import { LawExplorer } from "./components/LawExplorer";
+import { NodeBanner } from "./components/NodeBanner";
 import { OpenEscrowForm } from "./components/OpenEscrowForm";
 import { useSigner } from "./signer/SignerContext";
 
@@ -13,6 +14,7 @@ export default function App() {
   return (
     <div className="app">
       <Header page={page} setPage={(p) => { setPage(p); setSelected(undefined); }} />
+      <NodeBanner />
       {mode === "demo" && demoUnavailable && <div className="banner red">{demoUnavailable}</div>}
       <main>
         {page === "escrows" && (selected === undefined ? <EscrowList onOpen={setSelected} /> : <EscrowDetail id={selected} onBack={() => setSelected(undefined)} />)}

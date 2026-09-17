@@ -107,6 +107,6 @@ export function useTokenTransfers(token: Address | undefined) {
 
 /** block.timestamp as the contract's measurement reads it (eth_call on the pending block). */
 export function useChainTime() {
-  const r = useReadContract({ address: ESCROW, abi: settlementEscrowAbi, functionName: "chainTime", blockTag: "pending", query: { refetchInterval: POLL } });
-  return { data: r.data === undefined ? undefined : Number(r.data) };
+  const r = useReadContract({ address: ESCROW, abi: settlementEscrowAbi, functionName: "chainTime", blockTag: "pending", query: { refetchInterval: POLL, retry: 1 } });
+  return { data: r.data === undefined ? undefined : Number(r.data), error: r.error, isError: r.isError };
 }

@@ -1,5 +1,7 @@
 # CROSSING — a non-custodial stablecoin settlement escrow ruled by a LAW
 
+[![ci](https://github.com/devkancheti4-design/crossing-escrow/actions/workflows/ci.yml/badge.svg)](https://github.com/devkancheti4-design/crossing-escrow/actions/workflows/ci.yml)
+
 Cross-border settlements today pay intermediaries, wait days, and trust a counterparty.
 CROSSING locks a stablecoin payment in a smart contract and releases it **programmatically**
 when the settlement proof attests (m-of-n approver signatures and/or an on-chain oracle
@@ -37,9 +39,59 @@ over all 256 bytes, 2^24 lift brackets and all 2^32 inputs: **TOTAL 0 violations
 | `docs/AUDIT.md` | self-audit against the mentor guidelines (reentrancy, CEI, gas, dispute/timeout logic, wallet UX) with evidence and known limitations |
 | `docs/LAW-EVALUATION.md` | "use the laws and see will it work": what the law form buys and does not buy for escrow, with the evidence and a verdict |
 
-## Quickstart (three terminals)
+## Live demo (GitHub Pages)
 
-Requirements: Node 20+, npm, a C compiler (clang/gcc). Foundry is **not** required.
+**https://devkancheti4-design.github.io/crossing-escrow/** — a static build of the dApp,
+deployed by `.github/workflows/pages.yml` on every push to `main`.
+
+There is no public chain behind it: the site talks to a Hardhat node **on your machine** at
+`http://127.0.0.1:8545`, using the canonical addresses a fresh node produces (`MockUSD
+0x5FbD…0aa3`, `SettlementEscrow 0xCf7E…0fc9`, …). To use it:
+
+```bash
+cd contracts && npm ci && npx hardhat node          # terminal 1
+```
+
+```bash
+cd contracts && npm run deploy:local                 # terminal 2, then reload the page
+```
+
+Chrome or Firefox recommended (they let an https page reach `localhost`). Without a node the
+site shows a banner; the **Law explorer** tab still works because the TypeScript port of the
+law runs client-side.
+
+## Install dependencies
+
+Works on macOS, Linux and Windows. Foundry is **not** required (Hardhat 3 runs the
+forge-std style Solidity tests). CI runs the full suite on all three OSes: see
+`.github/workflows/ci.yml`.
+
+| requirement | macOS | Linux (Debian/Ubuntu, Fedora) | Windows |
+|---|---|---|---|
+| Git | `xcode-select --install` or Homebrew | `sudo apt install git` / `sudo dnf install git` | [git-scm.com](https://git-scm.com) (Git Bash included) |
+| Node.js **22 LTS** + npm (Vite needs ≥ 20.19 or ≥ 22.12; Hardhat 3 targets 22) | [nodejs.org](https://nodejs.org) or `brew install node@22` | [nodejs.org](https://nodejs.org) or `nvm install 22` | [nodejs.org](https://nodejs.org) installer or `winget install OpenJS.NodeJS.LTS` |
+| C compiler for the law (`gcc` or `clang`) | `xcode-select --install` | `sudo apt install build-essential` / `sudo dnf install gcc` | **WSL2** (recommended), or MSYS2 UCRT64 `pacman -S mingw-w64-ucrt-x86_64-gcc`, or LLVM clang. MSVC is not supported: the law uses `__builtin_ctz` and `clock_gettime` by design |
+
+Then, from the repository root:
+
+```bash
+git clone https://github.com/devkancheti4-design/crossing-escrow.git
+cd crossing-escrow
+```
+
+```bash
+cd contracts && npm ci     # Hardhat 3, OpenZeppelin 5, viem, forge-std (fetched from GitHub over https)
+```
+
+```bash
+cd frontend && npm ci      # React 19, Vite, wagmi 2, viem 2, RainbowKit, vitest
+```
+
+`npm ci` installs exactly the locked versions; `npm install` also works. On Windows use
+PowerShell or Git Bash; every command below is identical. Hardhat 3 downloads the Solidity
+compiler (`solc 0.8.34`) on first compile, so the first run needs network access.
+
+## Quickstart (three terminals)
 
 ```bash
 # terminal 1 — local chain
@@ -89,6 +141,9 @@ the `localhost:8545` network (chain id 31337).
 ```bash
 cd law && cc -O2 -Wall -Wextra -Werror -o crossing crossing.c && ./crossing   # expects: TOTAL  0 violations
 ```
+
+On Windows without WSL, from an MSYS2 UCRT64 shell: `gcc -O2 -Wall -Wextra -Werror -o crossing.exe crossing.c && ./crossing.exe`.
+The harness sweeps all 2^32 inputs, so it takes 5–30 s depending on the machine.
 
 ```bash
 cd contracts && npx hardhat test          # 46 passing (law obligations + every escrow transition + fuzz)

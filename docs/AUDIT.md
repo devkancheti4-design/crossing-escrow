@@ -99,3 +99,20 @@ asserted in `test/CrossingLaw.t.sol` and, exhaustively over 2^32, in `law/crossi
    escrow.
 8. Solidity `0.8.34` with `evmVersion: cancun`; the contracts use no transient storage or
    Cancun-only opcodes, so they compile for older targets too.
+
+## 7. External review findings, classified (core vs measurement vs environment)
+
+"Core" = the law and the escrow state machine (`CrossingLaw.sol`, `SettlementEscrow.sol` outside
+`observe`). "Measurement" = `observe` and the dependencies it reads (oracle, price feed, token).
+None of these change the law; they are policy choices around it.
+
+| finding | where | assessment | recommended fix (not applied — core left as delivered) |
+|---|---|---|---|
+| Arbiter power is not time-limited once Held; `resolve` does not check `heldUntil` | core (state machine) | By design: after the window anyone may re-rule, and a still-degraded byte re-holds, so the arbiter remains the undo while the hazard persists. Real but bounded: the arbiter can never act on Open or final escrows, and never bypass attestation. | `resolve(Release/Refund)` requires `block.timestamp < heldUntil`, or a re-rule after the window exits Held when the byte is clean |
+| Single guardian | core (governance) | Availability only: pause/throttle degrade to ESCROW, never REJECT, and never block refunds. | Deploy with a multisig + timelock as owner (no code change) |
+| No enforced minimum attestation: `quorum = 0`, no oracle | core (terms validation) | A foot-gun, not an exploit: the payer chooses it for their own funds; the law still fails closed on every other hazard. | `_validateTerms`: require `quorum >= 1 || oracle != 0` |
+| Trust delegated to payer-chosen oracle / feed / arbiter / token | measurement | Inherent: the law rules on the situation the measurement reports; a lying source is invisible. Fail-closed covers *silent* and *broken* sources only. | Curated oracle/feed registries; decentralised oracle networks; a payee-side veto on terms at open |
+| No role rotation / recovery for an existing escrow | core | Recovery is the refund path (deadline, payee cancel, arbiter). Acceptable for escrow-sized windows. | Optional `rotate` with both parties' consent |
+| Repeated dispute cycles | core | Delay only: each dispute → Held → arbiter; funds never leave to a third party. | Dispute bond, or one dispute per party per escrow |
+| Any ERC-20 accepted | measurement + terms | Fee-on-transfer is measured (UNFUNDED → REJECT, refund returns what was funded); rebasing, pausing or blacklisting tokens can leave funds Held or a transfer reverting. | Token allowlist at the protocol or terms level; treat a reverting transfer as a documented failure mode |
+| Solidity tests not run by the reviewer on Windows (policy blocked Hardhat's native runtime) | environment | Not a code finding. The GitHub Actions matrix runs the full suite on `windows-latest`, `ubuntu-latest` and `macos-latest`; see the ci badge. | Allow the EDR binary, or use WSL2 |
