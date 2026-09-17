@@ -38,6 +38,7 @@ over all 256 bytes, 2^24 lift brackets and all 2^32 inputs: **TOTAL 0 violations
 | `docs/ARCHITECTURE.md` | roles, state machine, measurement table, sequence diagrams, trust model |
 | `docs/AUDIT.md` | self-audit against the mentor guidelines (reentrancy, CEI, gas, dispute/timeout logic, wallet UX) with evidence and known limitations |
 | `law/experiments/` + `docs/LAW-NTZB-EVALUATION.md` | fair, multi-angle evaluation of two extra candidate expressions supplied by the author (`expr` size 5 and the `ntzb` act): structure, law-core obligations, escrow situations, best-case remap, on-chain gas, 2^32 totality |
+| `docs/DEMO.md` | the scripted demo driver, the MP4 recorder, and how to record your own narrated video |
 | `docs/PRESENTING.md` | a runbook for demoing this: setup, a five-minute script with the exact bytes each step produces, what to run as proof, and honest answers to the questions a reviewer will ask |
 | `docs/LAW-EVALUATION.md` | "use the laws and see will it work": what the law form buys and does not buy for escrow, with the evidence and a verdict |
 

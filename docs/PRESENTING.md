@@ -8,6 +8,9 @@ observed in the running app, not estimated.
 
 ## 0. Before the judges arrive (5 minutes)
 
+> Tooling for all of this lives in [DEMO.md](DEMO.md): `npm run demo` drives every scenario from
+> the terminal, and `npm run record` in `tools/` renders an MP4 of the app being used.
+
 Three terminals from the repository root. Leave all three running.
 
 ```bash

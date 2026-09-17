@@ -1,0 +1,12 @@
+{
+  "name": "crossing-tools",
+  "private": true,
+  "type": "module",
+  "description": "Demo recorder: drives the dApp in a real browser and renders an MP4.",
+  "scripts": {
+    "record": "node record-demo.mjs"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.11.0"
+  }
+}

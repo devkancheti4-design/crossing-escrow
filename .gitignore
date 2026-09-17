@@ -7,3 +7,6 @@ coverage/
 .DS_Store
 law/crossing
 *.o
+tools/frames/
+tools/failure.png
+tools/chk-*.jpg
