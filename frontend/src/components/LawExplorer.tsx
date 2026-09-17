@@ -3,6 +3,7 @@ import { useReadContract } from "wagmi";
 import { deployment } from "../config/deployment";
 import { crossingLawHarnessAbi } from "../generated/abis";
 import { HAZARDS, HELD_OUT, TAUGHT, hex, oracle, rule } from "../law/crossing";
+import { NTZB_ACT_MEANING, ntzbAct } from "../law/ntzb";
 import { HazardPanel } from "./HazardPanel";
 import { LawTrace } from "./LawTrace";
 
@@ -50,6 +51,7 @@ export function LawExplorer() {
                 <tr><td>HELD-OUT (scored apart)</td><td className="mono">{HELD_OUT.map(([b, a]) => `${hex(b)}→${a}${rule(b) === a ? "✓" : "✗"}`).join("  ")}</td></tr>
                 <tr><td>Landing pair</td><td className="mono">rule(0x04)={rule(4)} · rule(0x00)={rule(0)}</td></tr>
                 <tr><td>Form</td><td>one MASK, one EMIT, one ctz — no branch, no table, no loop; every bit a hazard; SETTLE is the FLOOR, earned by 0x00 and no other byte</td></tr>
+                <tr><td>Experimental kernel (author's ntzb candidate, evaluated in <span className="mono">docs/LAW-NTZB-EVALUATION.md</span>)</td><td className="mono">act = (4 &amp; ntzb(x−7)) + ntzb(x + (x&amp;128)) → <b>{ntzbAct(obs)}</b> · {NTZB_ACT_MEANING[ntzbAct(obs)]}</td></tr>
                 <tr><td>The fold</td><td>ACT(a|b) = min(ACT a, ACT b): a batch of crossings is ruled by its weakest member (see <span className="mono">previewBatch</span>)</td></tr>
               </tbody>
             </table>

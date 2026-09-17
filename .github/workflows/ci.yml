@@ -47,6 +47,10 @@ jobs:
         run: |
           cc -O2 -Wall -Wextra -Werror -o crossing crossing.c
           ./crossing
+      - name: law - experiments compile (unix)
+        if: runner.os != 'Windows'
+        working-directory: law/experiments
+        run: cc -O2 -Wall -Wextra -Werror -o ntzb ntzb.c
       - name: law - set up MinGW-w64 gcc (windows)
         if: runner.os == 'Windows'
         uses: msys2/setup-msys2@v2

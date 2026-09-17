@@ -37,6 +37,7 @@ over all 256 bytes, 2^24 lift brackets and all 2^32 inputs: **TOTAL 0 violations
 | `docs/SPEC.md` | the build specification (law, protocol, interface, tests, UI) |
 | `docs/ARCHITECTURE.md` | roles, state machine, measurement table, sequence diagrams, trust model |
 | `docs/AUDIT.md` | self-audit against the mentor guidelines (reentrancy, CEI, gas, dispute/timeout logic, wallet UX) with evidence and known limitations |
+| `law/experiments/` + `docs/LAW-NTZB-EVALUATION.md` | fair, multi-angle evaluation of two extra candidate expressions supplied by the author (`expr` size 5 and the `ntzb` act): structure, law-core obligations, escrow situations, best-case remap, on-chain gas, 2^32 totality |
 | `docs/LAW-EVALUATION.md` | "use the laws and see will it work": what the law form buys and does not buy for escrow, with the evidence and a verdict |
 
 ## Live demo (GitHub Pages)
