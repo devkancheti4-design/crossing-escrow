@@ -1,0 +1,47 @@
+  crossed more than allowed                  0
+  crossed less than required                 0
+  R1 unfunded or expired: REJECT             0
+  R2 SETTLE is EARNED - 0x00 and no other    0
+  R3 unsigned or unconfirmed: ATTEST, nothing moves 0
+  R4 disputed, depegged, paused, throttled: ESCROW  0
+  R5 narrower outranks wider (UNSIGNED+DISPUTED)    0
+  R6 monotone: every bit is a hazard         0   (256 x 8)
+  R7 total: every input lands in act 0..4    0
+  RESERVED is never returned                 0
+  THE THEOREM act 4 on a non-zero byte       0
+  the partition counts                       exact  (SETTLE 1 RESV 0 ESCROW 15 ATTEST 48 REJECT 192)
+  TAUGHT situations                          0
+  HELD-OUT situations                        0   <- scored apart
+  L1 lift brackets the truth                 0   (16,777,216 evals)
+  L2 lift with no unknowns is the law        0
+  G1 the gap UNUSED disturbs nothing         0
+  G1b the gap OCCUPIED returns act 3         0   <- mask bit 3 is usable
+  F1 homomorphism ACT(a|b)==min              0
+  F2 idempotent                              0
+  F3 commutative and associative             0
+  F4 identity fold(m,FLOOR)==m               0
+  F5 a veto anywhere vetoes the batch        0
+  F6 depth monotone ACT(a|b)<=ACT(a)         0
+  F7 a child never exceeds its parent        0
+  F8 gates inherit down (none today)         0   <- vacuous, still run
+  BATCH root 0x00 -> child 0x00 -> leaf 0x02: act 0   0   (root alone 4)
+
+  THE CERTIFICATE  every lane is c * bit_i on 0..255
+    UNFUNDED    =  1 * bit_0
+    EXPIRED     =  1 * bit_1
+    UNSIGNED    =  2 * bit_2
+    UNCONFIRMED =  2 * bit_3
+    DISPUTED    =  4 * bit_4
+    DEPEGGED    =  4 * bit_5
+    PAUSED      =  4 * bit_6
+    THROTTLED   =  4 * bit_7
+    lanes without a certificate                0
+
+  TOTALITY OVER ALL 2^32   not over 256
+    acts outside {0,1,2,4} anywhere on the line 0
+    inputs where the law disagrees with its byte 0
+    act 4 on a non-zero low byte                 0
+
+  timing  one ruling                          1.36 ns   (informational)
+
+  TOTAL  0 violations

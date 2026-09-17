@@ -1,0 +1,69 @@
+No contracts to compile
+
+Running Solidity tests
+
+  test/SettlementEscrow.t.sol:SettlementEscrowTest
+    ✔ test_Views_RevertOnUnknownId()
+    ✔ test_Timeout_WhileHeld_WaitsForWindow()
+    ✔ test_Timeout_PayerRefund()
+    ✔ test_Throttle_HoldsThenNextWindowSettles()
+    ✔ test_StaleFeed_SetsDepegged()
+    ✔ test_Rule_IsPermissionlessAndInformational()
+    ✔ test_RevertingOracle_SetsUnconfirmed_NoRevert()
+    ✔ test_Refund_NotParty()
+    ✔ test_Reentrancy_OnSettle_IsBlocked()
+    ✔ test_Reentrancy_OnRefund_IsBlocked()
+    ✔ test_PreviewBatch_TheFoldIsMin()
+    ✔ test_Payee_CancelAnyTime()
+    ✔ test_Pause_HoldsThenUnpauseSettles_RefundStillWorks()
+    ✔ test_OracleWithoutCode_SetsUnconfirmed()
+    ✔ test_OraclePath_SettlesOnConfirmation()
+    ✔ test_Open_WhenPaused_Reverts()
+    ✔ test_Open_PullsFundsAndRecords()
+    ✔ test_Open_BadTerms()
+    ✔ test_Multisig_HappyPath_SettlesOnQuorum()
+    ✔ test_Invariant_BalanceCoversLiveEscrows()
+    ✔ test_Held_ReRuleAfterWindow_ReHoldsWhileDisputed()
+    ✔ test_Guardian_OnlyOwner()
+GAS open (3 approvers)           317870
+GAS approve + rule (ATTEST)      19308
+GAS rule (ATTEST, no-op)         11131
+GAS approve + rule + SETTLE      43945
+GAS refund (payee cancel)        10900
+    ✔ test_Gas_Report()
+    ✔ test_GasGuzzlerOracle_IsContainedByTheGasCap()
+    ✔ test_FeedWithoutCode_SetsDepegged()
+    ✔ test_FeeOnTransfer_Unfunded_RejectsThenRefundsWhatWasFunded()
+    ✔ test_Dispute_NotParty()
+    ✔ test_Dispute_NarrowerOutranksWider_ThenHolds()
+    ✔ test_Dispute_ArbiterRelease()
+    ✔ test_Dispute_ArbiterRefund()
+    ✔ test_Dispute_ArbiterDismiss_ReRulesImmediately()
+    ✔ test_Dismiss_InOpen_ClearsDisputeOnly()
+    ✔ test_Depeg_HoldsThenRepegSettles()
+    ✔ test_BothPaths_QuorumAndOracleRequired()
+    ✔ test_Arbiter_AccessAndScope()
+    ✔ test_Approve_AccessAndDoubleApproval()
+
+  test/NtzbLaw.t.sol:NtzbLawTest
+GAS ntzb.act(0x14)        5985
+GAS crossing.rule(0x14)   6198
+    ✔ test_Gas_SideBySide()
+    ✔ test_Exhaustive_MatchesPlainRestatement_AndC()
+    ✔ test_EscrowSituations_Facts()
+    ✔ testFuzz_Totality(uint256) (runs: 256)
+
+  test/CrossingLaw.t.sol:CrossingLawTest
+    ✔ test_Taught()
+    ✔ test_R6_Monotone_256x8()
+    ✔ test_R1_R5_DomainRules()
+    ✔ test_Partition_SETTLE1_RESV0_ESCROW15_ATTEST48_REJECT192()
+    ✔ test_MaskIsTheCFileMask()
+    ✔ test_HeldOut_ScoredApart()
+    ✔ test_Fold_HomomorphismIdempotentCommutativeIdentity()
+    ✔ test_Exhaustive_AgreesWithOracle()
+    ✔ test_Certificates_EveryLaneIs_c_times_bit_i()
+    ✔ testFuzz_Totality(uint256) (runs: 256)
+
+50 passing (50 solidity)
+

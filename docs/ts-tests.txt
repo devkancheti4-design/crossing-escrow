@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 /Users/kanchetidevieswar/hackathon 17,18/frontend
+
+ ✓ src/law/ntzb.test.ts (3 tests) 5ms
+ ✓ src/law/crossing.test.ts (9 tests) 27ms
+
+ Test Files  2 passed (2)
+      Tests  12 passed (12)
+   Start at  21:40:42
+   Duration  363ms (transform 54ms, setup 0ms, collect 60ms, tests 31ms, environment 0ms, prepare 151ms)
+
