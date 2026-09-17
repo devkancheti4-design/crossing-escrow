@@ -1,0 +1,29 @@
+{
+  "chainId": 31337,
+  "rpcUrl": "http://127.0.0.1:8545",
+  "deployedAt": "2026-09-17T12:44:29.161Z",
+  "contracts": {
+    "escrow": "0x8a791620dd6260079bf849dc5567adc3f2fdc318",
+    "usd": "0x0165878a594ca255338adfa4d48449f69242eb8f",
+    "oracle": "0xa513e6e4b8f2a923d98304ec87f64353c4d5c853",
+    "feed": "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6",
+    "harness": "0x610178da211fef7d417bc0e6fed39f05609ad788"
+  },
+  "roles": {
+    "guardian": "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+    "payer": "0x70997970c51812dc3a010c7d01b50e0d17dc79c8",
+    "payee": "0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc",
+    "approvers": [
+      "0x90f79bf6eb2c4f870365e785982e1f101e93b906",
+      "0x15d34aaf54267db7d7c367839aaf71a00a2c6a65",
+      "0x9965507d1a55bcc2695c58ba16fb37d819b0a4dc"
+    ],
+    "oracleOperator": "0x976ea74026e726554db657fa54763abd0c3a0aa9",
+    "arbiter": "0x14dc79964da2c08b23698b3d3cc7ca32193d9955",
+    "feedOperator": "0x23618e81e3f5cdf7f54c3d65f7fbc0abf5b21e8f"
+  },
+  "seededEscrowIds": [
+    1,
+    2
+  ]
+}
