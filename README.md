@@ -71,7 +71,7 @@ forge-std style Solidity tests). CI runs the full suite on all three OSes: see
 |---|---|---|---|
 | Git | `xcode-select --install` or Homebrew | `sudo apt install git` / `sudo dnf install git` | [git-scm.com](https://git-scm.com) (Git Bash included) |
 | Node.js **22 LTS** + npm (Vite needs ≥ 20.19 or ≥ 22.12; Hardhat 3 targets 22) | [nodejs.org](https://nodejs.org) or `brew install node@22` | [nodejs.org](https://nodejs.org) or `nvm install 22` | [nodejs.org](https://nodejs.org) installer or `winget install OpenJS.NodeJS.LTS` |
-| C compiler for the law (`gcc` or `clang`) | `xcode-select --install` | `sudo apt install build-essential` / `sudo dnf install gcc` | **WSL2** (recommended), or MSYS2 UCRT64 `pacman -S mingw-w64-ucrt-x86_64-gcc`, or LLVM clang. MSVC is not supported: the law uses `__builtin_ctz` and `clock_gettime` by design |
+| C compiler for the law (`gcc` or `clang`) | `xcode-select --install` | `sudo apt install build-essential` / `sudo dnf install gcc` | **WSL2** (recommended), or LLVM clang + the shim in `law/win32/` — see **Windows: read this first**. MSVC `cl.exe` is not supported |
 
 Then, from the repository root:
 
@@ -91,6 +91,85 @@ cd frontend && npm ci      # React 19, Vite, wagmi 2, viem 2, RainbowKit, vitest
 `npm ci` installs exactly the locked versions; `npm install` also works. On Windows use
 PowerShell or Git Bash; every command below is identical. Hardhat 3 downloads the Solidity
 compiler (`solc 0.8.34`) on first compile, so the first run needs network access.
+
+## Windows: read this first
+
+Two things on a locked-down Windows machine will block the default commands, and both have a
+clean way around:
+
+| symptom | cause | fix |
+|---|---|---|
+| `npx hardhat test` / `npx hardhat node` stops before anything runs, mentioning **Windows Application Control**, Smart App Control, or a blocked `edr.node` | Hardhat 3's network/test engine (EDR) is a native Node add-on; Application Control refuses to load unsigned binaries | use **WSL2** (option 1) or **Docker** (option 2), or have an administrator allow `contracts\node_modules\@nomicfoundation\edr-win32-x64-msvc\edr.node` (Smart App Control cannot be re-enabled once turned off, so prefer the allow-list) |
+| `'cc' is not recognized` | Windows ships no C compiler | **WSL2** (option 1), or install the signed LLVM clang and use the shim (option 3) |
+
+The frontend (`npm test`, `npm run build`, `npm run dev`) is pure JavaScript and works natively.
+
+### Option 1 (recommended): WSL2 — everything runs exactly like Linux
+
+Open PowerShell **as administrator** once:
+
+```powershell
+wsl --install -d Ubuntu
+```
+
+Reboot, open the **Ubuntu** app, then inside it:
+
+```bash
+sudo apt update && sudo apt install -y build-essential git curl
+```
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash && source ~/.bashrc && nvm install 22
+```
+
+```bash
+git clone https://github.com/devkancheti4-design/crossing-escrow.git && cd crossing-escrow
+```
+
+From here every command in this README is the Linux command. `npx hardhat node` inside WSL is
+reachable from a Windows browser at `http://localhost:8545`, and the dApp at
+`http://localhost:5173`, so the demo works unchanged. Keep the clone inside the Linux file
+system (`~/crossing-escrow`, not `/mnt/c/...`) for speed.
+
+### Option 2: Docker Desktop (no WSL setup of your own)
+
+```powershell
+docker run --rm -it -v ${PWD}:/w -w /w node:22 bash
+```
+
+Inside the container: `apt-get update && apt-get install -y build-essential`, then the Linux
+commands. Publish ports with `-p 8545:8545 -p 5173:5173` if you want the demo from Windows.
+
+### Option 3: native Windows, no WSL — what works and how
+
+1. **Frontend** (PowerShell, works as-is):
+   ```powershell
+   cd frontend; npm ci; npm test; npm run build
+   ```
+2. **The law harness** with the signed LLVM toolchain. Install clang:
+   ```powershell
+   winget install LLVM.LLVM
+   ```
+   Open a new PowerShell, then from the repository root compile with the shim (the law file
+   itself is untouched; the shim only supplies `clock_gettime` for the timing line):
+   ```powershell
+   clang -O2 -Wall -Wextra -Werror -include law\win32\clock_gettime_shim.h -o law\crossing.exe law\crossing.c
+   ```
+   ```powershell
+   .\law\crossing.exe
+   ```
+   Expect `TOTAL  0 violations`. This exact sequence runs in CI on `windows-latest`. MSVC `cl.exe`
+   is not supported (no `__builtin_ctz`). If Application Control also refuses the freshly built
+   `crossing.exe`, that policy applies to every locally built program; use option 1.
+3. **Contracts**: `npx hardhat test` needs the EDR native add-on. Without an allow-list entry for
+   `edr.node` this cannot run natively; use option 1, 2 or 4. The Solidity suite (50 tests) is
+   executed on Windows in CI; see the badge above or
+   https://github.com/devkancheti4-design/crossing-escrow/actions.
+
+### Option 4: nothing to install — GitHub Codespaces
+
+On the repository page: **Code → Codespaces → Create codespace on main**. The browser-based
+VS Code gives you a Linux shell with Node and gcc; run the Linux commands there.
 
 ## Quickstart (three terminals)
 

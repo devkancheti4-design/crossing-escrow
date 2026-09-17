@@ -58,10 +58,19 @@ jobs:
           msystem: UCRT64
           update: false
           install: mingw-w64-ucrt-x86_64-gcc
-      - name: law - compile and certify (windows)
+      - name: law - compile and certify (windows, MinGW gcc)
         if: runner.os == 'Windows'
         shell: msys2 {0}
         working-directory: law
         run: |
           gcc -O2 -Wall -Wextra -Werror -o crossing.exe crossing.c
           ./crossing.exe
+      # the path documented in the README for a plain Windows machine: signed LLVM clang + the shim
+      - name: law - compile and certify (windows, native clang + shim)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Get-Command clang -ErrorAction SilentlyContinue)) { choco install llvm -y --no-progress | Out-Null; $env:PATH += ";C:\Program Files\LLVM\bin" }
+          clang --version
+          clang -O2 -Wall -Wextra -Werror -include law\win32\clock_gettime_shim.h -o law\crossing_native.exe law\crossing.c
+          .\law\crossing_native.exe
