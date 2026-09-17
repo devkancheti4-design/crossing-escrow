@@ -3,8 +3,8 @@ import { createWalletClient, http, type WalletClient } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { useAccount, useWalletClient } from "wagmi";
 import { DEV_ACCOUNTS, findDevAccount } from "../config/accounts";
-import { ROLES, deployment, type Address } from "../config/deployment";
-import { chain } from "../config/wagmi";
+import { ROLES, type Address } from "../config/deployment";
+import { RPC_URL, chain } from "../config/wagmi";
 
 export type Mode = "demo" | "wallet";
 
@@ -38,7 +38,7 @@ export function SignerProvider({ children }: { children: ReactNode }) {
     const wc = createWalletClient({
       account: privateKeyToAccount(dev.privateKey),
       chain,
-      transport: http(deployment.rpcUrl),
+      transport: http(RPC_URL),
     });
     return { address: role.address, walletClient: wc as WalletClient };
   }, [roleKey]);

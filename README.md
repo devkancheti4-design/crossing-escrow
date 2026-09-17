@@ -45,21 +45,38 @@ over all 256 bytes, 2^24 lift brackets and all 2^32 inputs: **TOTAL 0 violations
 **https://devkancheti4-design.github.io/crossing-escrow/** — a static build of the dApp,
 deployed by `.github/workflows/pages.yml` on every push to `main`.
 
-There is no public chain behind it: the site talks to a Hardhat node **on your machine** at
-`http://127.0.0.1:8545`, using the canonical addresses a fresh node produces (`MockUSD
-0x5FbD…0aa3`, `SettlementEscrow 0xCf7E…0fc9`, …). To use it:
+There is no public chain behind it: the site talks to a Hardhat node **on your machine**, using
+the canonical addresses a fresh node produces (`MockUSD 0x5FbD…0aa3`, `SettlementEscrow
+0xCf7E…0fc9`, …).
+
+**For the interactive demo, run the dApp locally — that path has no browser restrictions:**
 
 ```bash
 cd contracts && npm ci && npx hardhat node          # terminal 1
 ```
 
 ```bash
-cd contracts && npm run deploy:local                 # terminal 2, then reload the page
+cd contracts && npm run deploy:local                 # terminal 2
 ```
 
-Chrome or Firefox recommended (they let an https page reach `localhost`). Without a node the
-site shows a banner; the **Law explorer** tab still works because the TypeScript port of the
-law runs client-side.
+```bash
+cd frontend && npm ci && npm run dev                 # terminal 3 → http://localhost:5173
+```
+
+**If you want the hosted page itself to drive your local chain**, it needs one more process. A
+page served over https cannot call the Hardhat node directly: the node answers a CORS preflight
+with `Access-Control-Allow-Methods: OPTIONS, GET` — POST is not allowed — and sends no
+`Access-Control-Allow-Private-Network` header, which Chrome requires before a public page may
+reach a loopback address. This proxy supplies both:
+
+```bash
+cd contracts && npm run rpc:proxy                    # terminal 3 → 127.0.0.1:8547
+```
+
+The hosted page defaults to that proxy, and its banner has a field for any other RPC URL. The
+proxy accepts every origin, so run it only against a throwaway development chain. Without a node
+the site shows the banner; the **Law explorer** tab works regardless, because the TypeScript port
+of the law runs client-side.
 
 ## Install dependencies
 
