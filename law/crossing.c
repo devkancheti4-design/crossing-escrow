@@ -170,7 +170,8 @@ int main(void)
     long n[5]={0,0,0,0,0};
     for (int x=0;x<256;x++) {
         int k=crossing(x), o=oracle(x);
-        if (k>o) over++;  if (k<o) under++;
+        if (k>o) over++;
+        if (k<o) under++;
         if (k<0||k>4) r7++; else n[k]++;
         int veto =(x&1)||(x&2);
         int att  =(x&4)||(x&8);
@@ -274,11 +275,13 @@ int main(void)
     printf("    lanes without a certificate                %ld\n", nocert);
     printf("\n  TOTALITY OVER ALL 2^32   not over 256\n");
     long t1=0,t2=0,t3=0; uint32_t u=0;
-    for(;;){ int32_t x=(int32_t)u; int k=crossing(x);
+    for(;;){ int32_t x=(int32_t)u;
+        int k=crossing(x);
         if(k<0||k>4||k==3) t1++;
         if(k != crossing(x & 0xFF)) t2++;
         if(k==4 && (u & 0xFFu)!=0) t3++;
-        if(u==0xFFFFFFFFu) break; u++; }
+        if(u==0xFFFFFFFFu) break;
+        u++; }
     printf("    acts outside {0,1,2,4} anywhere on the line %ld\n", t1);
     printf("    inputs where the law disagrees with its byte %ld\n", t2);
     printf("    act 4 on a non-zero low byte                 %ld\n", t3);
